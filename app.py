@@ -269,10 +269,13 @@ def stats(file_id):
     return jsonify({'total': total, 'recent': recent})
 
 # ---------------------------------------------------------------------------
-# Boot
+# Boot — init DB automaticamente ao subir (local e Railway)
 # ---------------------------------------------------------------------------
 
+with app.app_context():
+    if DATABASE_URL:
+        init_db()
+
 if __name__ == '__main__':
-    init_db()
     print('\n✅  Share Your HTML rodando em http://localhost:5050\n')
     app.run(debug=False, port=5050, host='0.0.0.0')
