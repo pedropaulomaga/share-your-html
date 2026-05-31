@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShareHTML — Acesse a plataforma</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3347;
+  --accent: #6c63ff;
+  --accent-hover: #5a52e0;
+  --text: #e8eaf0;
+  --muted: #8b90a7;
+  --danger: #ef4444;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background decoration */
+.bg-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.bg-glow-2 {
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+  top: 20%; left: 70%;
+  pointer-events: none;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo / Brand */
+.brand {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  border-radius: 18px;
+  font-size: 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(108,99,255,0.35);
+}
+.brand h1 {
+  font-size: 26px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 40%, var(--muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.brand p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 46px 13px 16px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  letter-spacing: 1px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-wrapper input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+.input-wrapper input.shake {
+  animation: shake 0.35s ease;
+  border-color: var(--danger);
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.toggle-pw:hover { color: var(--text); }
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: #fca5a5;
+  margin-bottom: 20px;
+}
+
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+}
+.btn-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+
+.footer-note {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.login-wrapper { animation: fadeIn 0.35s ease; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
+
+<div class="login-wrapper">
+  <div class="brand">
+    <div class="brand-icon">⟨/⟩</div>
+    <h1>ShareHTML</h1>
+    <p>Gerencie e compartilhe suas páginas HTML<br>de forma simples e rápida.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acessar a plataforma</div>
+    <div class="card-subtitle">Digite sua senha para entrar no painel de gerenciamento.</div>
+
+    {% if error %}
+    <div class="error-msg">
+      🔒 Senha incorreta. Tente novamente.
+    </div>
+    {% endif %}
+
+    <form method="POST" onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label>Senha de acesso</label>
+        <div class="input-wrapper">
+          <input type="password" name="password" id="passwordInput"
+                 placeholder="••••••••" autofocus required
+                 {% if error %}class="shake"{% endif %}>
+          <button type="button" class="toggle-pw" onclick="togglePw()" title="Mostrar/ocultar senha">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        Acessar a plataforma →
+      </button>
+    </form>
+  </div>
+
+  <div class="footer-note">
+    Share Your HTML &nbsp;·&nbsp; Uso local e privado
+  </div>
+</div>
+
+<script>
+function togglePw() {
+  const inp = document.getElementById('passwordInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function handleSubmit(e) {
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Verificando...';
+  btn.disabled = true;
+}
+</script>
+</body>
+</html>
