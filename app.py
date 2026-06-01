@@ -211,30 +211,20 @@ def index():
 
     folders = query('SELECT * FROM folders ORDER BY name ASC', fetchall=True) or []
 
+    file_select = '''
+        SELECT f.id, f.name, f.description, f.password, f.password_plain,
+               f.folder_id, f.created_at, f.updated_at,
+               (SELECT COUNT(*) FROM access_log a WHERE a.file_id = f.id) AS views,
+               (SELECT a.accessed_at FROM access_log a WHERE a.file_id = f.id
+                ORDER BY a.accessed_at DESC LIMIT 1) AS last_access
+        FROM files f
+    '''
     if folder_id == '__none__':
-        files = query(
-            '''SELECT f.id, f.name, f.description, f.password, f.password_plain,
-                      f.folder_id, f.created_at, f.updated_at,
-                      (SELECT COUNT(*) FROM access_log a WHERE a.file_id = f.id) AS views
-               FROM files f WHERE f.folder_id IS NULL ORDER BY f.created_at DESC''',
-            fetchall=True
-        )
+        files = query(file_select + 'WHERE f.folder_id IS NULL ORDER BY f.created_at DESC', fetchall=True)
     elif folder_id:
-        files = query(
-            '''SELECT f.id, f.name, f.description, f.password, f.password_plain,
-                      f.folder_id, f.created_at, f.updated_at,
-                      (SELECT COUNT(*) FROM access_log a WHERE a.file_id = f.id) AS views
-               FROM files f WHERE f.folder_id = %s ORDER BY f.created_at DESC''',
-            (folder_id,), fetchall=True
-        )
+        files = query(file_select + 'WHERE f.folder_id = %s ORDER BY f.created_at DESC', (folder_id,), fetchall=True)
     else:
-        files = query(
-            '''SELECT f.id, f.name, f.description, f.password, f.password_plain,
-                      f.folder_id, f.created_at, f.updated_at,
-                      (SELECT COUNT(*) FROM access_log a WHERE a.file_id = f.id) AS views
-               FROM files f ORDER BY f.created_at DESC''',
-            fetchall=True
-        )
+        files = query(file_select + 'ORDER BY f.created_at DESC', fetchall=True)
 
     # Total views for stats strip
     total_views = query('SELECT COUNT(*) AS c FROM access_log', fetchone=True)['c']

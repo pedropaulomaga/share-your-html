@@ -79,6 +79,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .file-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: border-color 0.15s, transform 0.15s, opacity 0.15s; cursor: grab; }
 .file-card:hover { border-color: var(--accent); transform: translateY(-1px); }
 .file-card.dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.98); }
+.file-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,0.25); cursor: pointer; }
 
 .file-card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
 .file-icon { width: 40px; height: 40px; border-radius: 9px; background: rgba(108,99,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -243,25 +244,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <input class="search-bar" type="text" placeholder="🔍  Buscar por nome..." oninput="filterCards(this.value)">
   </div>
 
-  <div class="stats-strip">
-    <div class="stat-card accent">
-      <div class="val">{{ total_files }}</div>
-      <div class="lbl">HTMLs carregados</div>
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-card accent" id="statCard1">
+      <div class="val" id="statVal1">{{ total_files }}</div>
+      <div class="lbl" id="statLbl1">HTMLs carregados</div>
     </div>
-    <div class="stat-card">
-      <div class="val">{{ total_views }}</div>
-      <div class="lbl">Acessos totais</div>
+    <div class="stat-card" id="statCard2">
+      <div class="val" id="statVal2">{{ total_views }}</div>
+      <div class="lbl" id="statLbl2">Acessos totais</div>
     </div>
-    <div class="stat-card">
-      <div class="val">{{ folders|length }}</div>
-      <div class="lbl">Pastas criadas</div>
+    <div class="stat-card" id="statCard3" style="display:none">
+      <div class="val" id="statVal3">—</div>
+      <div class="lbl" id="statLbl3">Último acesso</div>
     </div>
+  </div>
+  <div id="selectionHint" style="display:none; font-size:12px; color:var(--muted); margin-top:-18px; margin-bottom:20px;">
+    Clique no arquivo novamente para deselecionar
   </div>
 
   <div class="files-grid" id="grid">
     {% for f in files %}
     <div class="file-card" data-id="{{ f.id }}" data-name="{{ f.name|lower }}"
+         data-views="{{ f.views }}"
+         data-last-access="{{ f.last_access or '—' }}"
+         data-fullname="{{ f.name }}"
          draggable="true"
+         onclick="selectCard(event, this)"
          ondragstart="cardDragStart(event, '{{ f.id }}')"
          ondragend="cardDragEnd(event)">
       <div class="file-card-top">
@@ -522,6 +530,79 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 <script>
 const BASE = window.location.origin;
+
+// Valores originais do strip para reset
+const ORIG = {
+  val1: document.getElementById('statVal1')?.textContent,
+  lbl1: document.getElementById('statLbl1')?.textContent,
+  val2: document.getElementById('statVal2')?.textContent,
+  lbl2: document.getElementById('statLbl2')?.textContent,
+};
+
+let selectedCard = null;
+
+// ---- SELEÇÃO DE CARD ----
+function selectCard(e, card) {
+  // Não ativa seleção se o clique foi num botão/link interno
+  if (e.target.closest('button, a, .pw-reveal')) return;
+
+  if (selectedCard === card) {
+    // Deseleciona
+    card.classList.remove('selected');
+    selectedCard = null;
+    resetStats();
+    return;
+  }
+
+  // Deseleciona anterior
+  if (selectedCard) selectedCard.classList.remove('selected');
+  selectedCard = card;
+  card.classList.add('selected');
+
+  // Lê dados do card
+  const name       = card.dataset.fullname || card.dataset.name;
+  const views      = card.dataset.views || '0';
+  const lastAccess = card.dataset.lastAccess || '—';
+
+  // Formata último acesso — mostra só horário se for hoje
+  let lastAccessFmt = lastAccess;
+  if (lastAccess && lastAccess !== '—') {
+    const d = new Date(lastAccess.replace(' ', 'T'));
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) {
+      lastAccessFmt = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    } else {
+      lastAccessFmt = lastAccess.slice(0, 16); // YYYY-MM-DD HH:MM
+    }
+  }
+
+  // Atualiza strip
+  const c1 = document.getElementById('statCard1');
+  c1.classList.add('accent');
+  document.getElementById('statVal1').textContent = views;
+  document.getElementById('statLbl1').textContent = 'Acessos';
+
+  document.getElementById('statVal2').textContent = lastAccess === '—' ? '—' : lastAccessFmt;
+  document.getElementById('statLbl2').textContent = 'Último acesso';
+
+  const c3 = document.getElementById('statCard3');
+  c3.style.display = '';
+  // Trunca nome para caber no card
+  const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
+  document.getElementById('statVal3').textContent = shortName;
+  document.getElementById('statLbl3').textContent = 'Arquivo selecionado';
+
+  document.getElementById('selectionHint').style.display = 'block';
+}
+
+function resetStats() {
+  document.getElementById('statVal1').textContent = ORIG.val1;
+  document.getElementById('statLbl1').textContent = ORIG.lbl1;
+  document.getElementById('statVal2').textContent = ORIG.val2;
+  document.getElementById('statLbl2').textContent = ORIG.lbl2;
+  document.getElementById('statCard3').style.display = 'none';
+  document.getElementById('selectionHint').style.display = 'none';
+}
 
 // ---- TOAST ----
 function toast(msg, type='success') {
