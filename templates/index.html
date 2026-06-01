@@ -9,326 +9,657 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #22263a;
-  --border: #2e3347;
-  --accent: #6c63ff;
-  --accent-hover: #5a52e0;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --text: #e8eaf0;
-  --muted: #8b90a7;
-  --radius: 12px;
+  --bg:       #0c0f1a;
+  --surface:  #141726;
+  --surface2: #1c2033;
+  --surface3: #232840;
+  --border:   #272d45;
+  --border2:  #323858;
+  --accent:   #6c63ff;
+  --accent2:  #8b83ff;
+  --accent-bg: rgba(108,99,255,0.1);
+  --success:  #10b981;
+  --danger:   #ef4444;
+  --warning:  #f59e0b;
+  --text:     #eaedf5;
+  --text2:    #b0b6cc;
+  --muted:    #6b7194;
+  --radius:   14px;
+  --radius-sm: 8px;
+  --shadow:   0 4px 24px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
 }
 
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  line-height: 1.5;
+}
 
-/* SIDEBAR */
-.sidebar { width: 240px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
-.logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.logo span { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.logo small { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; -webkit-text-fill-color: var(--muted); }
+/* ─── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 10;
+}
 
-.sidebar-section { padding: 0 12px; margin-bottom: 8px; }
-.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); padding: 8px 8px 6px; }
+.logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  font-family: monospace;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(108,99,255,0.4);
+}
+.logo-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.logo-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
 
-.nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; font-size: 13.5px; color: var(--muted); cursor: pointer; border-radius: 8px; transition: all 0.15s; border: 1px solid transparent; background: none; width: 100%; text-align: left; text-decoration: none; }
-.nav-item:hover, .nav-item.active { color: var(--text); background: var(--surface2); }
-.nav-item.active { color: var(--accent); }
-/* Drop target highlight on sidebar folders */
-.nav-item.drop-hover { background: rgba(108,99,255,0.18) !important; border-color: var(--accent) !important; color: var(--accent) !important; transform: scale(1.02); }
-.nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
-.nav-item .count { margin-left: auto; font-size: 11px; background: var(--surface2); padding: 1px 7px; border-radius: 10px; color: var(--muted); }
-.nav-item.active .count { background: rgba(108,99,255,0.2); color: var(--accent); }
+.nav-section { padding: 16px 12px 4px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 8px 8px;
+  display: block;
+}
 
-.folder-row { display: flex; align-items: center; gap: 4px; }
-.folder-row .nav-item { flex: 1; min-width: 0; }
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text2);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  text-decoration: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s, border-color 0.13s;
+}
+.nav-link:hover  { background: var(--surface2); color: var(--text); }
+.nav-link.active { background: var(--accent-bg); color: var(--accent2); border-color: rgba(108,99,255,0.2); }
+.nav-link .ni { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-link .nc { margin-left: auto; font-size: 11px; background: var(--surface3); padding: 1px 7px; border-radius: 20px; color: var(--muted); }
+.nav-link.active .nc { background: rgba(108,99,255,0.2); color: var(--accent2); }
+
+/* drop target for drag */
+.nav-link.drop-hover {
+  background: rgba(108,99,255,0.18) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent2) !important;
+  transform: scale(1.01);
+}
+
+.folder-row { display: flex; align-items: center; gap: 3px; }
+.folder-row .nav-link { flex: 1; min-width: 0; }
 .folder-name-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.folder-action { background: none; border: none; color: var(--muted); cursor: pointer; padding: 6px; border-radius: 6px; font-size: 12px; opacity: 0; transition: all 0.15s; flex-shrink: 0; }
-.folder-row:hover .folder-action { opacity: 1; }
-.folder-action:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
 
-.btn-new-folder { display: flex; align-items: center; gap: 7px; padding: 7px 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; border-radius: 8px; border: 1px dashed var(--border); background: none; width: 100%; text-align: left; margin-top: 6px; transition: all 0.15s; }
-.btn-new-folder:hover { color: var(--accent); border-color: var(--accent); }
+.folder-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); padding: 5px 6px; border-radius: 6px;
+  font-size: 12px; opacity: 0; transition: all 0.13s; flex-shrink: 0;
+}
+.folder-row:hover .folder-btn { opacity: 1; }
+.folder-btn:hover { color: var(--danger); background: rgba(239,68,68,0.12); }
 
-.sidebar-bottom { margin-top: auto; padding: 16px 12px 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
-.btn-upload-sidebar { background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 11px 16px; font-size: 13.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.15s; width: 100%; }
-.btn-upload-sidebar:hover { background: var(--accent-hover); }
+.new-folder-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; font-size: 13px; color: var(--muted);
+  border: 1px dashed var(--border2); border-radius: var(--radius-sm);
+  background: none; width: 100%; cursor: pointer;
+  margin-top: 8px; transition: all 0.13s;
+}
+.new-folder-btn:hover { color: var(--accent2); border-color: var(--accent); }
 
-/* MAIN */
-.main { margin-left: 240px; flex: 1; padding: 36px 40px; min-height: 100vh; }
-.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 16px; }
-.topbar-left h1 { font-size: 22px; font-weight: 700; }
-.topbar-left p { color: var(--muted); font-size: 13px; margin-top: 3px; }
-.search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; color: var(--text); font-size: 13.5px; width: 240px; outline: none; transition: border 0.15s; }
-.search-bar:focus { border-color: var(--accent); }
-.search-bar::placeholder { color: var(--muted); }
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 6px;
+}
 
-/* STATS */
+.btn-upload {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--accent);
+  color: #fff; border: none; border-radius: 10px;
+  padding: 11px 16px; font-size: 14px; font-weight: 600;
+  cursor: pointer; width: 100%;
+  transition: background 0.13s, transform 0.1s;
+  box-shadow: 0 2px 12px rgba(108,99,255,0.35);
+}
+.btn-upload:hover { background: #5a52e0; transform: translateY(-1px); }
+
+/* ─── MAIN ─────────────────────────────────────────────── */
+.main { margin-left: 248px; flex: 1; padding: 36px 36px 60px; min-height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 20px;
+  margin-bottom: 28px;
+}
+.topbar-left h1 { font-size: 21px; font-weight: 700; }
+.topbar-left p  { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+.search-wrap { position: relative; }
+.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-input {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 9px 14px 9px 38px;
+  color: var(--text); font-size: 13.5px; width: 240px;
+  outline: none; transition: border 0.13s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--muted); }
+
+/* ─── STATS STRIP ───────────────────────────────────────── */
 .stats-strip { display: flex; gap: 14px; margin-bottom: 28px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; flex: 1; }
-.stat-card .val { font-size: 26px; font-weight: 700; }
-.stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
-.stat-card.accent { border-color: var(--accent); background: rgba(108,99,255,0.07); }
-.stat-card.accent .val { color: var(--accent); }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px; flex: 1;
+  transition: border-color 0.15s;
+}
+.stat-card.accent { border-color: rgba(108,99,255,0.35); background: rgba(108,99,255,0.07); }
+.stat-val { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.stat-card.accent .stat-val { color: var(--accent2); }
+.stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-/* GRID */
-.files-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+/* ─── GRID ──────────────────────────────────────────────── */
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
 
-.file-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: border-color 0.15s, transform 0.15s, opacity 0.15s; cursor: grab; }
-.file-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-.file-card.dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.98); }
-.file-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,0.25); cursor: pointer; }
-
-.file-card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-.file-icon { width: 40px; height: 40px; border-radius: 9px; background: rgba(108,99,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.file-meta { flex: 1; min-width: 0; }
-/* Nome: até 2 linhas antes dos três pontinhos */
-.file-name {
-  font-size: 14.5px; font-weight: 600; line-height: 1.35;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+/* ─── FILE CARD ─────────────────────────────────────────── */
+.file-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s;
+  cursor: grab;
   overflow: hidden;
 }
-.file-desc { font-size: 12px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* Tooltip nome completo */
-.name-tooltip-wrap { position: relative; }
-.name-tooltip {
-  display: none; position: absolute; left: 0; top: calc(100% + 6px);
-  background: #1e2235; border: 1px solid var(--border); border-radius: 8px;
-  padding: 8px 12px; font-size: 13px; color: var(--text); z-index: 50;
-  white-space: normal; max-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-  line-height: 1.45;
+.file-card:hover {
+  border-color: var(--border2);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
 }
-.name-tooltip-wrap:hover .name-tooltip { display: block; }
+.file-card.dragging { opacity: 0.35; cursor: grabbing; transform: scale(0.97); }
 
-.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
-.badge-lock { background: rgba(245,158,11,0.14); color: var(--warning); }
-.badge-open { background: rgba(34,197,94,0.11); color: var(--success); }
+/* Card top — name area */
+.card-top {
+  padding: 18px 18px 0;
+  display: flex; align-items: flex-start; gap: 14px;
+  position: relative;
+}
+.card-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(108,99,255,0.18), rgba(108,99,255,0.08));
+  border: 1px solid rgba(108,99,255,0.2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-top: 2px;
+}
+.card-info { flex: 1; min-width: 0; padding-right: 56px; } /* space for action btns */
 
-.file-stats { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 14px; }
-.file-stat .val { font-size: 15px; font-weight: 600; }
-.file-stat .lbl { font-size: 11px; color: var(--muted); }
+.card-name {
+  font-size: 14.5px; font-weight: 700; line-height: 1.35;
+  color: var(--text);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden; word-break: break-word;
+}
+.card-desc {
+  font-size: 12px; color: var(--muted);
+  margin-top: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
-/* PASSWORD REVEAL */
-.pw-reveal { display: flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 7px; padding: 6px 10px; margin-bottom: 12px; font-size: 12px; }
-.pw-reveal .pw-label { color: var(--muted); flex-shrink: 0; }
-.pw-reveal .pw-value { font-family: monospace; color: var(--warning); font-size: 13px; letter-spacing: 0.5px; flex: 1; }
-.pw-reveal button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 2px; }
+/* Edit / Delete icon buttons — top right */
+.card-actions-top {
+  position: absolute; top: 0; right: 0;
+  display: flex; gap: 2px;
+}
+.card-icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px;
+  border: none; background: none; cursor: pointer;
+  font-size: 14px; color: var(--muted);
+  transition: background 0.13s, color 0.13s;
+}
+.card-icon-btn:hover { background: var(--surface2); color: var(--text); }
+.card-icon-btn.danger:hover { background: rgba(239,68,68,0.14); color: var(--danger); }
 
-.file-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+/* Badge */
+.card-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px;
+  margin-top: 10px;
+}
+.badge-open { background: rgba(16,185,129,0.12); color: var(--success); }
+.badge-lock { background: rgba(245,158,11,0.12); color: var(--warning); }
 
-/* BUTTONS */
-.btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 7px; font-size: 12.5px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; text-decoration: none; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); }
-.btn-ghost { background: var(--surface2); color: var(--text); border-color: var(--border); }
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-.btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border-color: rgba(239,68,68,0.25); }
-.btn-danger:hover { background: var(--danger); color: #fff; }
-.btn-copy { background: var(--surface2); color: var(--muted); border-color: var(--border); }
-.btn-copy:hover { color: var(--success); border-color: var(--success); }
+/* Password reveal pill */
+.pw-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.18);
+  border-radius: 8px; padding: 5px 10px;
+  margin-top: 10px; font-size: 12px;
+}
+.pw-pill-label { color: var(--muted); flex-shrink: 0; }
+.pw-pill-val { font-family: monospace; color: var(--warning); font-size: 13px; flex: 1; letter-spacing: 0.5px; }
+.pw-pill-toggle {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 14px; padding: 0 2px; line-height: 1;
+  transition: color 0.13s;
+}
+.pw-pill-toggle:hover { color: var(--text); }
 
-/* EMPTY */
-.empty { grid-column: 1/-1; text-align: center; padding: 64px 20px; color: var(--muted); }
-.empty .icon { font-size: 44px; margin-bottom: 14px; }
-.empty p { font-size: 15px; margin-bottom: 18px; }
+/* Card middle — access counter */
+.card-middle {
+  padding: 18px 18px 0;
+  text-align: center;
+  margin-top: 4px;
+}
+.card-divider {
+  height: 1px; background: var(--border);
+  margin: 16px 18px 0;
+}
+.access-count {
+  font-size: 38px; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--accent2), #c4b5fd);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.access-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--muted);
+  margin-top: 4px;
+}
+.last-access {
+  font-size: 12px; color: var(--muted); margin-top: 6px;
+}
 
-/* MODALS */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(4px); }
+/* Card bottom — action buttons */
+.card-divider2 { height: 1px; background: var(--border); margin: 16px 18px 0; }
+.card-bottom {
+  padding: 14px 14px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: auto;
+}
+
+.btn-view {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--accent);
+  color: #fff; border: none; border-radius: 10px;
+  padding: 12px; font-size: 14px; font-weight: 600;
+  cursor: pointer; width: 100%; text-decoration: none;
+  transition: background 0.13s, transform 0.1s;
+  box-shadow: 0 2px 10px rgba(108,99,255,0.3);
+}
+.btn-view:hover { background: #5a52e0; transform: translateY(-1px); }
+
+.card-secondary-row {
+  display: flex; gap: 8px;
+}
+.btn-stats {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--surface2); color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 10px;
+  padding: 10px 14px; font-size: 13px; font-weight: 500;
+  cursor: pointer; flex: 1; transition: all 0.13s;
+}
+.btn-stats:hover { background: var(--surface3); border-color: var(--accent); color: var(--accent2); }
+
+.btn-copy {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface2); color: var(--text2);
+  border: 1px solid var(--border2); border-radius: 10px;
+  padding: 10px 14px; font-size: 16px;
+  cursor: pointer; transition: all 0.13s;
+}
+.btn-copy:hover { background: var(--surface3); border-color: var(--success); color: var(--success); }
+
+/* ─── EMPTY STATE ───────────────────────────────────────── */
+.empty-state {
+  grid-column: 1/-1;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 20px; gap: 16px;
+}
+.empty-icon { font-size: 52px; opacity: 0.4; }
+.empty-state p { font-size: 15px; color: var(--muted); }
+
+/* ─── MODALS ────────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(8,10,18,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
 .overlay.open { opacity: 1; pointer-events: all; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 520px; transform: translateY(18px); transition: transform 0.2s; max-height: 90vh; overflow-y: auto; }
-.overlay.open .modal { transform: translateY(0); }
-.modal h2 { font-size: 19px; font-weight: 700; margin-bottom: 22px; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  padding: 32px; width: 100%; max-width: 520px;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+.overlay.open .modal { transform: translateY(0) scale(1); }
+
+.modal-sm { max-width: 400px; text-align: center; }
+
+.modal-title { font-size: 19px; font-weight: 700; margin-bottom: 22px; }
 
 .form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 13px; color: var(--text); font-size: 13.5px; font-family: inherit; outline: none; transition: border 0.15s; }
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
-.form-group textarea { resize: vertical; min-height: 72px; }
-.form-group select option { background: var(--surface); }
+.form-label {
+  display: block; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 7px;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 10px 13px;
+  color: var(--text); font-size: 14px; font-family: inherit;
+  outline: none; transition: border 0.13s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 72px; }
+.form-select option { background: var(--surface); }
 
-.pw-input-group { position: relative; }
-.pw-input-group input { padding-right: 40px; }
-.pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; }
-.pw-toggle:hover { color: var(--text); }
+.pw-field { position: relative; }
+.pw-field .form-input { padding-right: 42px; }
+.pw-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 16px; transition: color 0.13s;
+}
+.pw-eye:hover { color: var(--text); }
 
-.file-drop { border: 2px dashed var(--border); border-radius: 9px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.15s; color: var(--muted); font-size: 13px; }
-.file-drop:hover, .file-drop.drag { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.05); }
-.file-drop .icon { font-size: 28px; margin-bottom: 6px; }
+.file-drop {
+  border: 2px dashed var(--border2); border-radius: 10px;
+  padding: 24px; text-align: center; cursor: pointer;
+  color: var(--muted); font-size: 13px;
+  transition: all 0.13s;
+}
+.file-drop:hover, .file-drop.drag { border-color: var(--accent); color: var(--accent2); background: var(--accent-bg); }
+.file-drop .drop-icon { font-size: 28px; margin-bottom: 6px; }
 .file-drop input { display: none; }
-.selected-file-name { margin-top: 8px; font-size: 12px; color: var(--accent); font-weight: 500; }
+.drop-picked { margin-top: 8px; font-size: 12px; color: var(--accent2); font-weight: 500; }
 
-.modal-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; }
-
-.progress-bar { width: 100%; height: 3px; background: var(--border); border-radius: 4px; margin-top: 10px; overflow: hidden; display: none; }
+.progress-bar { height: 3px; background: var(--border2); border-radius: 4px; margin-top: 10px; display: none; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; width: 0; }
 
-/* STATS MODAL */
-.stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.stats-table th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); border-bottom: 1px solid var(--border); }
-.stats-table td { padding: 10px 10px; border-bottom: 1px solid rgba(46,51,71,0.5); color: var(--text); vertical-align: middle; }
-.stats-table tr:last-child td { border-bottom: none; }
-.stats-table .flag { font-size: 15px; }
-.stats-table-wrap { max-height: 300px; overflow-y: auto; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
 
-/* TOAST */
-.toast-container { position: fixed; bottom: 22px; right: 22px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 16px; font-size: 13.5px; display: flex; align-items: center; gap: 9px; min-width: 200px; animation: slideIn 0.2s ease; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
-.toast.success { border-color: var(--success); }
-.toast.error { border-color: var(--danger); }
-@keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* Modal buttons */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.13s; }
+.btn-primary   { background: var(--accent); color: #fff; box-shadow: 0 2px 10px rgba(108,99,255,0.3); }
+.btn-primary:hover { background: #5a52e0; }
+.btn-ghost     { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
+.btn-ghost:hover { background: var(--surface3); color: var(--text); }
+.btn-danger-modal { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.25); }
+.btn-danger-modal:hover { background: var(--danger); color: #fff; }
+
+/* Delete confirm */
+.confirm-icon { font-size: 48px; margin-bottom: 12px; }
+.confirm-msg { font-size: 14px; color: var(--text2); margin-bottom: 6px; line-height: 1.6; }
+.confirm-name { font-weight: 700; color: var(--text); }
+
+/* ─── STATS TABLE ───────────────────────────────────────── */
+.stats-summary {
+  display: flex; gap: 12px; margin-bottom: 18px;
+}
+.stats-mini-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px; flex: 1; text-align: center;
+}
+.stats-mini-card .smv { font-size: 24px; font-weight: 800; color: var(--accent2); }
+.stats-mini-card .sml { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.stats-table-wrap { max-height: 300px; overflow-y: auto; border-radius: 10px; border: 1px solid var(--border); }
+.stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stats-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 10.5px; letter-spacing: 0.9px; text-transform: uppercase;
+  color: var(--muted); background: var(--surface2);
+  position: sticky; top: 0;
+}
+.stats-table td {
+  padding: 11px 14px; border-top: 1px solid var(--border);
+  color: var(--text); vertical-align: middle;
+}
+.stats-table tr:hover td { background: var(--surface2); }
+.precision-badge {
+  display: inline-block; font-size: 10px; padding: 1px 6px;
+  border-radius: 10px; margin-left: 5px; vertical-align: middle;
+}
+.gps-badge { background: rgba(16,185,129,0.14); color: var(--success); }
+.ip-badge  { background: rgba(107,113,148,0.18); color: var(--muted); }
+
+/* ─── TOAST ─────────────────────────────────────────────── */
+.toast-wrap { position: fixed; bottom: 22px; right: 22px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 11px 16px; font-size: 13.5px;
+  display: flex; align-items: center; gap: 9px; min-width: 200px;
+  animation: toastIn 0.22s ease; box-shadow: var(--shadow);
+}
+.toast.ok  { border-color: rgba(16,185,129,0.4); }
+.toast.err { border-color: rgba(239,68,68,0.4); }
+@keyframes toastIn { from { transform: translateX(36px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
 <aside class="sidebar">
   <div class="logo">
-    <span>⟨/⟩ ShareHTML</span>
-    <small>Gerenciador de páginas HTML</small>
+    <div class="logo-mark">⟨/⟩</div>
+    <div class="logo-name">ShareHTML</div>
+    <div class="logo-sub">Gerenciador de páginas</div>
   </div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-label">Arquivos</div>
-    <a class="nav-item {% if not active_folder %}active{% endif %}" href="/">
-      <span class="icon">🗂</span> Todos
-      <span class="count">{{ total_files }}</span>
+  <div class="nav-section">
+    <span class="nav-label">Arquivos</span>
+    <a class="nav-link {% if not active_folder %}active{% endif %}" href="/">
+      <span class="ni">🗂</span> Todos os arquivos
+      <span class="nc">{{ total_files }}</span>
     </a>
-    <a class="nav-item {% if active_folder == '__none__' %}active{% endif %}" href="/?folder=__none__"
-       ondragover="sidebarDragOver(event)"
-       ondragleave="sidebarDragLeave(event)"
-       ondrop="sidebarDrop(event, '')">
-      <span class="icon">📄</span> Sem pasta
+    <a class="nav-link {% if active_folder == '__none__' %}active{% endif %}" href="/?folder=__none__"
+       ondragover="sidebarDragOver(event)" ondragleave="sidebarDragLeave(event)" ondrop="sidebarDrop(event,'')">
+      <span class="ni">📄</span> Sem pasta
     </a>
   </div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-label">Pastas</div>
-    {% for folder in folders %}
+  {% if folders %}
+  <div class="nav-section">
+    <span class="nav-label">Pastas</span>
+    {% for f in folders %}
     <div class="folder-row">
-      <a class="nav-item {% if active_folder == folder.id %}active{% endif %}" href="/?folder={{ folder.id }}"
-         ondragover="sidebarDragOver(event)"
-         ondragleave="sidebarDragLeave(event)"
-         ondrop="sidebarDrop(event, '{{ folder.id }}')">
-        <span class="icon">📁</span>
-        <span class="folder-name-text">{{ folder.name }}</span>
+      <a class="nav-link {% if active_folder == f.id %}active{% endif %}" href="/?folder={{ f.id }}"
+         ondragover="sidebarDragOver(event)" ondragleave="sidebarDragLeave(event)" ondrop="sidebarDrop(event,'{{ f.id }}')">
+        <span class="ni">📁</span>
+        <span class="folder-name-text">{{ f.name }}</span>
       </a>
-      <button class="folder-action" onclick="openEditFolder('{{ folder.id }}', '{{ folder.name }}')" title="Renomear">✏️</button>
-      <button class="folder-action" onclick="openDeleteFolder('{{ folder.id }}', '{{ folder.name }}')" title="Excluir">🗑</button>
+      <button class="folder-btn" onclick="openEditFolder('{{ f.id }}','{{ f.name }}')" title="Renomear">✏️</button>
+      <button class="folder-btn" onclick="openDeleteFolder('{{ f.id }}','{{ f.name }}')" title="Excluir">🗑</button>
     </div>
     {% endfor %}
-    <button class="btn-new-folder" onclick="openNewFolder()">＋ Nova pasta</button>
+  </div>
+  {% endif %}
+
+  <div class="nav-section" style="padding-top:4px">
+    <button class="new-folder-btn" onclick="openNewFolder()">
+      <span style="font-size:16px">＋</span> Nova pasta
+    </button>
   </div>
 
-  <div class="sidebar-bottom">
-    <button class="btn-upload-sidebar" onclick="openUpload()">＋ Subir HTML</button>
-    <a href="/logout" class="nav-item" style="justify-content:center; font-size:13px;">
-      <span class="icon">🚪</span> Sair
+  <div class="sidebar-footer">
+    <button class="btn-upload" onclick="openUpload()">＋ Subir HTML</button>
+    <a href="/logout" class="nav-link" style="justify-content:center; font-size:13px;">
+      <span class="ni">🚪</span> Sair
     </a>
   </div>
 </aside>
 
-<!-- MAIN -->
+<!-- ═══════════════ MAIN ═══════════════ -->
 <main class="main">
+
   <div class="topbar">
     <div class="topbar-left">
       <h1>
         {% if active_folder == '__none__' %}Sem pasta
-        {% elif active_folder %}{{ folders | selectattr('id', 'equalto', active_folder) | map(attribute='name') | first }}
+        {% elif active_folder %}{{ folders | selectattr('id','equalto',active_folder) | map(attribute='name') | first }}
         {% else %}Todos os arquivos{% endif %}
       </h1>
-      <p>{{ files|length }} arquivo{{ 's' if files|length != 1 else '' }} exibido{{ 's' if files|length != 1 else '' }}</p>
+      <p>{{ files|length }} arquivo{{ 's' if files|length != 1 }}</p>
     </div>
-    <input class="search-bar" type="text" placeholder="🔍  Buscar por nome..." oninput="filterCards(this.value)">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" type="text" placeholder="Buscar por nome..." oninput="filterCards(this.value)">
+    </div>
   </div>
 
-  <div class="stats-strip" id="statsStrip">
-    <div class="stat-card accent" id="statCard1">
-      <div class="val" id="statVal1">{{ total_files }}</div>
-      <div class="lbl" id="statLbl1">HTMLs carregados</div>
+  <div class="stats-strip">
+    <div class="stat-card accent">
+      <div class="stat-val">{{ total_files }}</div>
+      <div class="stat-lbl">HTMLs carregados</div>
     </div>
-    <div class="stat-card" id="statCard2">
-      <div class="val" id="statVal2">{{ total_views }}</div>
-      <div class="lbl" id="statLbl2">Acessos totais</div>
+    <div class="stat-card">
+      <div class="stat-val">{{ total_views }}</div>
+      <div class="stat-lbl">Acessos totais</div>
     </div>
-    <div class="stat-card" id="statCard3" style="display:none">
-      <div class="val" id="statVal3">—</div>
-      <div class="lbl" id="statLbl3">Último acesso</div>
-    </div>
-  </div>
-  <div id="selectionHint" style="display:none; font-size:12px; color:var(--muted); margin-top:-18px; margin-bottom:20px;">
-    Clique no arquivo novamente para deselecionar
   </div>
 
   <div class="files-grid" id="grid">
     {% for f in files %}
-    <div class="file-card" data-id="{{ f.id }}" data-name="{{ f.name|lower }}"
-         data-views="{{ f.views }}"
-         data-last-access="{{ f.last_access or '—' }}"
-         data-fullname="{{ f.name }}"
+    <div class="file-card"
+         data-id="{{ f.id }}"
+         data-name="{{ f.name | lower }}"
          draggable="true"
-         onclick="selectCard(event, this)"
-         ondragstart="cardDragStart(event, '{{ f.id }}')"
+         ondragstart="cardDragStart(event,'{{ f.id }}')"
          ondragend="cardDragEnd(event)">
-      <div class="file-card-top">
-        <div class="file-icon">📄</div>
-        <div class="file-meta">
-          <div class="name-tooltip-wrap">
-            <div class="file-name">{{ f.name }}</div>
-            <div class="name-tooltip">{{ f.name }}</div>
+
+      <!-- TOP: icon + name + edit/delete -->
+      <div class="card-top">
+        <div class="card-icon">📄</div>
+        <div class="card-info">
+          <div class="card-name" title="{{ f.name }}">{{ f.name }}</div>
+          <div class="card-desc">{{ f.description or 'Sem descrição' }}</div>
+          <span class="card-badge {% if f.password %}badge-lock{% else %}badge-open{% endif %}">
+            {% if f.password %}🔒 Com senha{% else %}🌐 Público{% endif %}
+          </span>
+          {% if f.password and f.password_plain %}
+          <div class="pw-pill">
+            <span class="pw-pill-label">🔑</span>
+            <span class="pw-pill-val" id="pw-{{ f.id }}">••••••••</span>
+            <button class="pw-pill-toggle" onclick="togglePw('{{ f.id }}','{{ f.password_plain }}')" title="Mostrar/ocultar">👁</button>
           </div>
-          <div class="file-desc">{{ f.description or 'Sem descrição' }}</div>
+          {% endif %}
         </div>
-        <span class="badge {% if f.password %}badge-lock{% else %}badge-open{% endif %}">
-          {% if f.password %}🔒 Senha{% else %}🌐 Público{% endif %}
-        </span>
-      </div>
 
-      {% if f.password and f.password_plain %}
-      <div class="pw-reveal">
-        <span class="pw-label">🔑 Senha:</span>
-        <span class="pw-value" id="pw-{{ f.id }}">••••••••</span>
-        <button onclick="togglePwReveal('{{ f.id }}', '{{ f.password_plain }}')" title="Mostrar/ocultar">👁</button>
-      </div>
-      {% endif %}
-
-      <div class="file-stats">
-        <div class="file-stat">
-          <div class="val">{{ f.views }}</div>
-          <div class="lbl">Acessos</div>
-        </div>
-        <div class="file-stat">
-          <div class="val">{{ f.id }}</div>
-          <div class="lbl">ID</div>
-        </div>
-        <div class="file-stat">
-          <div class="val">{{ f.created_at[:10] }}</div>
-          <div class="lbl">Criado em</div>
+        <!-- Edit / Delete top-right -->
+        <div class="card-actions-top">
+          <button class="card-icon-btn" title="Editar"
+            onclick="openEdit('{{ f.id }}',`{{ f.name }}`,`{{ f.description or '' }}`,`{{ f.password_plain or '' }}`,`{{ f.folder_id or '' }}`)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="card-icon-btn danger" title="Excluir"
+            onclick="openDelete('{{ f.id }}','{{ f.name }}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
         </div>
       </div>
 
-      <div class="file-actions">
-        <button class="btn btn-copy" onclick="copyLink('{{ f.id }}')">🔗 Link</button>
-        <a class="btn btn-ghost" href="/v/{{ f.id }}" target="_blank">👁 Ver</a>
-        <button class="btn btn-ghost" onclick="openStats('{{ f.id }}', '{{ f.name }}')">📊</button>
-        <button class="btn btn-ghost" onclick="openEdit(
-          '{{ f.id }}',
-          `{{ f.name }}`,
-          `{{ f.description or '' }}`,
-          `{{ f.password_plain or '' }}`,
-          `{{ f.folder_id or '' }}`
-        )">✏️</button>
-        <button class="btn btn-danger" onclick="openDelete('{{ f.id }}', '{{ f.name }}')">🗑</button>
+      <div class="card-divider"></div>
+
+      <!-- MIDDLE: access count -->
+      <div class="card-middle">
+        <div class="access-count">{{ f.views }}</div>
+        <div class="access-label">Acessos totais</div>
+        <div class="last-access">
+          {% if f.last_access %}
+            Último: {{ f.last_access[:16] }}
+          {% else %}
+            Nenhum acesso ainda
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- BOTTOM: action buttons -->
+      <div class="card-divider2"></div>
+      <div class="card-bottom">
+        <a class="btn-view" href="/v/{{ f.id }}" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Visualizar
+        </a>
+        <div class="card-secondary-row">
+          <button class="btn-stats" onclick="openStats('{{ f.id }}','{{ f.name }}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Estatísticas
+          </button>
+          <button class="btn-copy" onclick="copyLink('{{ f.id }}')" title="Copiar link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+        </div>
       </div>
     </div>
     {% endfor %}
 
     {% if not files %}
-    <div class="empty">
-      <div class="icon">📂</div>
+    <div class="empty-state">
+      <div class="empty-icon">📂</div>
       <p>Nenhum HTML aqui ainda.</p>
       <button class="btn btn-primary" onclick="openUpload()">＋ Subir HTML</button>
     </div>
@@ -336,195 +667,188 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 </main>
 
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-wrap" id="toastWrap"></div>
 
-<!-- MODAL: UPLOAD -->
-<div class="overlay" id="uploadOverlay" onclick="closeIfOverlay(event,'uploadOverlay')">
+<!-- ═══ MODAL: UPLOAD ═══ -->
+<div class="overlay" id="uploadOverlay" onclick="closeOverlay(event,'uploadOverlay')">
   <div class="modal">
-    <h2>📤 Subir novo HTML</h2>
+    <div class="modal-title">📤 Subir novo HTML</div>
     <div class="form-group">
-      <label>Arquivo HTML *</label>
-      <div class="file-drop" id="dropZone" onclick="document.getElementById('fileInput').click()"
+      <label class="form-label">Arquivo HTML *</label>
+      <div class="file-drop" id="dropZone"
+           onclick="document.getElementById('fileInput').click()"
            ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
-        <div class="icon">📎</div>
-        <div>Arraste um .html aqui ou clique para selecionar</div>
-        <input type="file" id="fileInput" accept=".html" onchange="fileSelected(this)">
-        <div class="selected-file-name" id="selectedFileName"></div>
+        <div class="drop-icon">📎</div>
+        <div>Arraste um <strong>.html</strong> aqui ou clique para selecionar</div>
+        <input type="file" id="fileInput" accept=".html" onchange="filePicked(this)">
+        <div class="drop-picked" id="pickedName"></div>
       </div>
       <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
     </div>
     <div class="form-group">
-      <label>Nome de exibição</label>
-      <input type="text" id="uploadName" placeholder="Ex: Dashboard de Vendas Q1">
+      <label class="form-label">Nome de exibição</label>
+      <input class="form-input" type="text" id="upName" placeholder="Ex: Dashboard de Vendas Q1">
     </div>
     <div class="form-group">
-      <label>Pasta</label>
-      <select id="uploadFolder">
+      <label class="form-label">Pasta</label>
+      <select class="form-select" id="upFolder">
         <option value="">Sem pasta</option>
-        {% for folder in folders %}
-        <option value="{{ folder.id }}">📁 {{ folder.name }}</option>
-        {% endfor %}
+        {% for f in folders %}<option value="{{ f.id }}">📁 {{ f.name }}</option>{% endfor %}
       </select>
     </div>
     <div class="form-group">
-      <label>Descrição (opcional)</label>
-      <textarea id="uploadDesc" placeholder="Para que serve este HTML?"></textarea>
+      <label class="form-label">Descrição (opcional)</label>
+      <textarea class="form-textarea" id="upDesc" placeholder="Para que serve este arquivo?"></textarea>
     </div>
     <div class="form-group">
-      <label>Senha de acesso (opcional)</label>
-      <div class="pw-input-group">
-        <input type="password" id="uploadPassword" placeholder="Deixe em branco para acesso público">
-        <button class="pw-toggle" type="button" onclick="toggleInput('uploadPassword')">👁</button>
+      <label class="form-label">Senha de acesso (opcional)</label>
+      <div class="pw-field">
+        <input class="form-input" type="password" id="upPw" placeholder="Deixe em branco para acesso público">
+        <button class="pw-eye" type="button" onclick="toggleInput('upPw')">👁</button>
       </div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('uploadOverlay')">Cancelar</button>
-      <button class="btn btn-primary" onclick="doUpload()">📤 Subir</button>
+      <button class="btn btn-primary" onclick="doUpload()">📤 Subir arquivo</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: EDIT -->
-<div class="overlay" id="editOverlay" onclick="closeIfOverlay(event,'editOverlay')">
+<!-- ═══ MODAL: EDIT ═══ -->
+<div class="overlay" id="editOverlay" onclick="closeOverlay(event,'editOverlay')">
   <div class="modal">
-    <h2>✏️ Editar</h2>
+    <div class="modal-title">✏️ Editar arquivo</div>
     <input type="hidden" id="editId">
     <div class="form-group">
-      <label>Nome *</label>
-      <input type="text" id="editName">
+      <label class="form-label">Nome *</label>
+      <input class="form-input" type="text" id="editName">
     </div>
     <div class="form-group">
-      <label>Pasta</label>
-      <select id="editFolder">
+      <label class="form-label">Pasta</label>
+      <select class="form-select" id="editFolder">
         <option value="">Sem pasta</option>
-        {% for folder in folders %}
-        <option value="{{ folder.id }}">📁 {{ folder.name }}</option>
-        {% endfor %}
+        {% for f in folders %}<option value="{{ f.id }}">📁 {{ f.name }}</option>{% endfor %}
       </select>
     </div>
     <div class="form-group">
-      <label>Descrição</label>
-      <textarea id="editDesc"></textarea>
+      <label class="form-label">Descrição</label>
+      <textarea class="form-textarea" id="editDesc"></textarea>
     </div>
     <div class="form-group">
-      <label>Senha de acesso</label>
-      <div class="pw-input-group">
-        <input type="password" id="editPassword" placeholder="Nova senha ou deixe em branco para manter">
-        <button class="pw-toggle" type="button" onclick="toggleInput('editPassword')">👁</button>
+      <label class="form-label">Senha de acesso</label>
+      <div class="pw-field">
+        <input class="form-input" type="password" id="editPw" placeholder="Deixe em branco para manter">
+        <button class="pw-eye" type="button" onclick="toggleInput('editPw')">👁</button>
       </div>
     </div>
-    <div class="form-group" id="clearPwGroup" style="display:none">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;">
-        <input type="checkbox" id="clearPw" style="width:auto">
+    <div class="form-group" id="clearPwRow" style="display:none">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--text2)">
+        <input type="checkbox" id="clearPw" style="width:auto;accent-color:var(--accent)">
         Remover senha (tornar público)
       </label>
     </div>
     <div class="form-group">
-      <label>Substituir arquivo HTML</label>
+      <label class="form-label">Substituir arquivo HTML</label>
       <div class="file-drop" style="padding:14px" onclick="document.getElementById('replaceInput').click()">
-        <input type="file" id="replaceInput" accept=".html" onchange="replaceSelected(this)">
-        <div style="font-size:12.5px">Clique para trocar o arquivo</div>
-        <div class="selected-file-name" id="replaceFileName"></div>
+        <input type="file" id="replaceInput" accept=".html" onchange="replacePicked(this)">
+        <div style="font-size:13px">Clique para trocar o arquivo .html</div>
+        <div class="drop-picked" id="replacePickedName"></div>
       </div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('editOverlay')">Cancelar</button>
-      <button class="btn btn-primary" onclick="doEdit()">💾 Salvar</button>
+      <button class="btn btn-primary" onclick="doEdit()">💾 Salvar alterações</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: DELETE -->
-<div class="overlay" id="deleteOverlay" onclick="closeIfOverlay(event,'deleteOverlay')">
-  <div class="modal" style="max-width:400px;text-align:center">
-    <h2>🗑 Excluir arquivo</h2>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:24px">
-      Tem certeza que quer excluir <strong id="deleteName"></strong>?<br>Essa ação não pode ser desfeita.
-    </p>
+<!-- ═══ MODAL: DELETE ═══ -->
+<div class="overlay" id="deleteOverlay" onclick="closeOverlay(event,'deleteOverlay')">
+  <div class="modal modal-sm">
+    <div class="confirm-icon">🗑️</div>
+    <div class="modal-title" style="margin-bottom:10px">Excluir arquivo?</div>
+    <div class="confirm-msg">Você está prestes a excluir<br><span class="confirm-name" id="deleteName"></span></div>
+    <div class="confirm-msg" style="margin-top:8px;font-size:12px">Esta ação não pode ser desfeita.</div>
     <input type="hidden" id="deleteId">
-    <div class="modal-actions" style="justify-content:center">
+    <div class="modal-footer" style="justify-content:center;margin-top:20px">
       <button class="btn btn-ghost" onclick="closeModal('deleteOverlay')">Cancelar</button>
-      <button class="btn btn-danger" onclick="doDelete()">Sim, excluir</button>
+      <button class="btn btn-danger-modal" onclick="doDelete()">Sim, excluir</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: STATS -->
-<div class="overlay" id="statsOverlay" onclick="closeIfOverlay(event,'statsOverlay')">
-  <div class="modal" style="max-width:600px">
-    <h2>📊 Acessos — <span id="statsTitle" style="color:var(--accent)"></span></h2>
-    <div class="stats-strip" style="margin-bottom:20px">
-      <div class="stat-card accent">
-        <div class="val" id="statsTotalNum">—</div>
-        <div class="lbl">Total de acessos</div>
+<!-- ═══ MODAL: STATS ═══ -->
+<div class="overlay" id="statsOverlay" onclick="closeOverlay(event,'statsOverlay')">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-title">📊 <span id="statsFileTitle"></span></div>
+    <div class="stats-summary">
+      <div class="stats-mini-card">
+        <div class="smv" id="statsTotalN">—</div>
+        <div class="sml">Total de acessos</div>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Últimos 30 acessos</p>
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px;letter-spacing:0.3px">ÚLTIMOS 30 ACESSOS</p>
     <div class="stats-table-wrap">
       <table class="stats-table">
-        <thead>
-          <tr>
-            <th>Data / Hora</th>
-            <th>Localização</th>
-            <th>IP</th>
-          </tr>
-        </thead>
-        <tbody id="statsList">
-          <tr><td colspan="3" style="color:var(--muted);text-align:center;padding:20px">Carregando...</td></tr>
+        <thead><tr>
+          <th>Data / Hora</th>
+          <th>Localização</th>
+          <th>IP</th>
+        </tr></thead>
+        <tbody id="statsBody">
+          <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px">Carregando...</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="modal-actions">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('statsOverlay')">Fechar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: NOVA PASTA -->
-<div class="overlay" id="newFolderOverlay" onclick="closeIfOverlay(event,'newFolderOverlay')">
-  <div class="modal" style="max-width:380px">
-    <h2>📁 Nova pasta</h2>
+<!-- ═══ MODAL: NOVA PASTA ═══ -->
+<div class="overlay" id="newFolderOverlay" onclick="closeOverlay(event,'newFolderOverlay')">
+  <div class="modal modal-sm">
+    <div class="modal-title">📁 Nova pasta</div>
     <div class="form-group">
-      <label>Nome da pasta *</label>
-      <input type="text" id="newFolderName" placeholder="Ex: Relatórios 2026"
-             onkeydown="if(event.key==='Enter') doCreateFolder()">
+      <label class="form-label">Nome *</label>
+      <input class="form-input" type="text" id="newFolderName" placeholder="Ex: Relatórios 2026"
+             onkeydown="if(event.key==='Enter')doCreateFolder()">
     </div>
-    <div class="modal-actions">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('newFolderOverlay')">Cancelar</button>
       <button class="btn btn-primary" onclick="doCreateFolder()">Criar pasta</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: EDITAR PASTA -->
-<div class="overlay" id="editFolderOverlay" onclick="closeIfOverlay(event,'editFolderOverlay')">
-  <div class="modal" style="max-width:380px">
-    <h2>✏️ Renomear pasta</h2>
+<!-- ═══ MODAL: EDIT PASTA ═══ -->
+<div class="overlay" id="editFolderOverlay" onclick="closeOverlay(event,'editFolderOverlay')">
+  <div class="modal modal-sm">
+    <div class="modal-title">✏️ Renomear pasta</div>
     <input type="hidden" id="editFolderId">
     <div class="form-group">
-      <label>Novo nome *</label>
-      <input type="text" id="editFolderName"
-             onkeydown="if(event.key==='Enter') doEditFolder()">
+      <label class="form-label">Novo nome *</label>
+      <input class="form-input" type="text" id="editFolderName"
+             onkeydown="if(event.key==='Enter')doEditFolder()">
     </div>
-    <div class="modal-actions">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('editFolderOverlay')">Cancelar</button>
       <button class="btn btn-primary" onclick="doEditFolder()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: EXCLUIR PASTA -->
-<div class="overlay" id="deleteFolderOverlay" onclick="closeIfOverlay(event,'deleteFolderOverlay')">
-  <div class="modal" style="max-width:400px;text-align:center">
-    <h2>🗑 Excluir pasta</h2>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:24px">
-      Excluir a pasta <strong id="deleteFolderName"></strong>?<br>
-      Os arquivos dentro dela <strong>não serão excluídos</strong>, ficarão sem pasta.
-    </p>
+<!-- ═══ MODAL: DELETE PASTA ═══ -->
+<div class="overlay" id="deleteFolderOverlay" onclick="closeOverlay(event,'deleteFolderOverlay')">
+  <div class="modal modal-sm">
+    <div class="confirm-icon">📁</div>
+    <div class="modal-title" style="margin-bottom:10px">Excluir pasta?</div>
+    <div class="confirm-msg">A pasta <strong id="deleteFolderName"></strong> será removida.<br>Os arquivos dentro dela <strong>não serão excluídos</strong> — ficarão sem pasta.</div>
     <input type="hidden" id="deleteFolderId">
-    <div class="modal-actions" style="justify-content:center">
+    <div class="modal-footer" style="justify-content:center;margin-top:20px">
       <button class="btn btn-ghost" onclick="closeModal('deleteFolderOverlay')">Cancelar</button>
-      <button class="btn btn-danger" onclick="doDeleteFolder()">Sim, excluir pasta</button>
+      <button class="btn btn-danger-modal" onclick="doDeleteFolder()">Excluir pasta</button>
     </div>
   </div>
 </div>
@@ -532,308 +856,200 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <script>
 const BASE = window.location.origin;
 
-// Valores originais do strip para reset
-const ORIG = {
-  val1: document.getElementById('statVal1')?.textContent,
-  lbl1: document.getElementById('statLbl1')?.textContent,
-  val2: document.getElementById('statVal2')?.textContent,
-  lbl2: document.getElementById('statLbl2')?.textContent,
-};
-
-let selectedCard = null;
-
-// ---- SELEÇÃO DE CARD ----
-function selectCard(e, card) {
-  // Não ativa seleção se o clique foi num botão/link interno
-  if (e.target.closest('button, a, .pw-reveal')) return;
-
-  if (selectedCard === card) {
-    // Deseleciona
-    card.classList.remove('selected');
-    selectedCard = null;
-    resetStats();
-    return;
-  }
-
-  // Deseleciona anterior
-  if (selectedCard) selectedCard.classList.remove('selected');
-  selectedCard = card;
-  card.classList.add('selected');
-
-  // Lê dados do card
-  const name       = card.dataset.fullname || card.dataset.name;
-  const views      = card.dataset.views || '0';
-  const lastAccess = card.dataset.lastAccess || '—';
-
-  // Formata último acesso — mostra só horário se for hoje
-  let lastAccessFmt = lastAccess;
-  if (lastAccess && lastAccess !== '—') {
-    const d = new Date(lastAccess.replace(' ', 'T'));
-    const today = new Date();
-    if (d.toDateString() === today.toDateString()) {
-      lastAccessFmt = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    } else {
-      lastAccessFmt = lastAccess.slice(0, 16); // YYYY-MM-DD HH:MM
-    }
-  }
-
-  // Atualiza strip
-  const c1 = document.getElementById('statCard1');
-  c1.classList.add('accent');
-  document.getElementById('statVal1').textContent = views;
-  document.getElementById('statLbl1').textContent = 'Acessos';
-
-  document.getElementById('statVal2').textContent = lastAccess === '—' ? '—' : lastAccessFmt;
-  document.getElementById('statLbl2').textContent = 'Último acesso';
-
-  const c3 = document.getElementById('statCard3');
-  c3.style.display = '';
-  // Trunca nome para caber no card
-  const shortName = name.length > 22 ? name.slice(0, 20) + '…' : name;
-  document.getElementById('statVal3').textContent = shortName;
-  document.getElementById('statLbl3').textContent = 'Arquivo selecionado';
-
-  document.getElementById('selectionHint').style.display = 'block';
+// ── TOAST ──────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = (type==='ok' ? '✅' : '❌') + ' ' + msg;
+  document.getElementById('toastWrap').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
 }
 
-function resetStats() {
-  document.getElementById('statVal1').textContent = ORIG.val1;
-  document.getElementById('statLbl1').textContent = ORIG.lbl1;
-  document.getElementById('statVal2').textContent = ORIG.val2;
-  document.getElementById('statLbl2').textContent = ORIG.lbl2;
-  document.getElementById('statCard3').style.display = 'none';
-  document.getElementById('selectionHint').style.display = 'none';
-}
-
-// ---- TOAST ----
-function toast(msg, type='success') {
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
-  document.getElementById('toastContainer').appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
-
-// ---- MODAL ----
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+// ── MODAL ──────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function closeIfOverlay(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+function closeOverlay(e, id) { if (e.target === e.currentTarget) closeModal(id); }
 
-// ---- SEARCH ----
+// ── SEARCH ─────────────────────────────────────────────
 function filterCards(q) {
   document.querySelectorAll('.file-card').forEach(c => {
     c.style.display = c.dataset.name.includes(q.toLowerCase()) ? '' : 'none';
   });
 }
 
-// ---- PW REVEAL (on card) ----
-function togglePwReveal(id, plain) {
+// ── PASSWORD UTILS ─────────────────────────────────────
+function togglePw(id, plain) {
   const el = document.getElementById('pw-' + id);
   el.textContent = el.textContent === '••••••••' ? plain : '••••••••';
 }
-
-// ---- TOGGLE INPUT TYPE ----
 function toggleInput(id) {
   const el = document.getElementById(id);
   el.type = el.type === 'password' ? 'text' : 'password';
 }
 
-// ---- COPY LINK ----
+// ── COPY LINK ──────────────────────────────────────────
 function copyLink(id) {
   navigator.clipboard.writeText(`${BASE}/v/${id}`).then(() => toast('Link copiado!'));
 }
 
-// ---- UPLOAD ----
+// ── UPLOAD ─────────────────────────────────────────────
 function openUpload() {
-  ['fileInput','uploadName','uploadDesc','uploadPassword'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('uploadFolder').value = '';
-  document.getElementById('selectedFileName').textContent = '';
+  ['fileInput','upName','upDesc','upPw'].forEach(id => { const e = document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('upFolder').value = '';
+  document.getElementById('pickedName').textContent = '';
   document.getElementById('progressBar').style.display = 'none';
   openModal('uploadOverlay');
 }
-function dragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag'); }
-function dragLeave() { document.getElementById('dropZone').classList.remove('drag'); }
-function dropFile(e) {
+function dragOver(e)  { e.preventDefault(); document.getElementById('dropZone').classList.add('drag'); }
+function dragLeave()  { document.getElementById('dropZone').classList.remove('drag'); }
+function dropFile(e)  {
   e.preventDefault(); dragLeave();
   const f = e.dataTransfer.files[0];
-  if (f) { document.getElementById('fileInput').files = e.dataTransfer.files; fileSelected({files:[f]}); }
+  if (f) { document.getElementById('fileInput').files = e.dataTransfer.files; filePicked({files:[f]}); }
 }
-function fileSelected(input) {
-  const f = input.files[0];
-  if (f) {
-    document.getElementById('selectedFileName').textContent = '📄 ' + f.name;
-    if (!document.getElementById('uploadName').value)
-      document.getElementById('uploadName').value = f.name.replace('.html','');
-  }
+function filePicked(input) {
+  const f = input.files[0]; if (!f) return;
+  document.getElementById('pickedName').textContent = '📄 ' + f.name;
+  if (!document.getElementById('upName').value)
+    document.getElementById('upName').value = f.name.replace('.html','');
 }
 async function doUpload() {
   const file = document.getElementById('fileInput').files[0];
-  if (!file) { toast('Selecione um arquivo .html', 'error'); return; }
+  if (!file) { toast('Selecione um arquivo .html', 'err'); return; }
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('name', document.getElementById('uploadName').value);
-  fd.append('description', document.getElementById('uploadDesc').value);
-  fd.append('password', document.getElementById('uploadPassword').value);
-  fd.append('folder_id', document.getElementById('uploadFolder').value);
+  fd.append('name', document.getElementById('upName').value);
+  fd.append('description', document.getElementById('upDesc').value);
+  fd.append('password', document.getElementById('upPw').value);
+  fd.append('folder_id', document.getElementById('upFolder').value);
   document.getElementById('progressBar').style.display = 'block';
   document.getElementById('progressFill').style.width = '60%';
-  const res = await fetch('/upload', { method: 'POST', body: fd });
+  const res  = await fetch('/upload', { method: 'POST', body: fd });
   const data = await res.json();
   document.getElementById('progressFill').style.width = '100%';
   setTimeout(() => document.getElementById('progressBar').style.display = 'none', 400);
-  if (data.error) { toast(data.error, 'error'); return; }
-  toast('HTML subido com sucesso!');
+  if (data.error) { toast(data.error, 'err'); return; }
+  toast('Arquivo subido!');
   closeModal('uploadOverlay');
   setTimeout(() => location.reload(), 700);
 }
 
-// ---- EDIT FILE ----
+// ── EDIT ───────────────────────────────────────────────
 function openEdit(id, name, desc, pwPlain, folderId) {
-  document.getElementById('editId').value = id;
-  document.getElementById('editName').value = name;
-  document.getElementById('editDesc').value = desc;
-  document.getElementById('editPassword').value = pwPlain;
-  document.getElementById('editPassword').type = 'password';
-  document.getElementById('clearPw').checked = false;
-  document.getElementById('clearPwGroup').style.display = pwPlain ? 'block' : 'none';
-  document.getElementById('editFolder').value = folderId || '';
-  document.getElementById('replaceFileName').textContent = '';
+  document.getElementById('editId').value      = id;
+  document.getElementById('editName').value    = name;
+  document.getElementById('editDesc').value    = desc;
+  document.getElementById('editPw').value      = pwPlain;
+  document.getElementById('editPw').type       = 'password';
+  document.getElementById('editFolder').value  = folderId || '';
+  document.getElementById('clearPw').checked  = false;
+  document.getElementById('clearPwRow').style.display = pwPlain ? 'block' : 'none';
+  document.getElementById('replacePickedName').textContent = '';
   document.getElementById('replaceInput').value = '';
   openModal('editOverlay');
 }
-function replaceSelected(input) {
+function replacePicked(input) {
   const f = input.files[0];
-  if (f) document.getElementById('replaceFileName').textContent = '📄 ' + f.name;
+  if (f) document.getElementById('replacePickedName').textContent = '📄 ' + f.name;
 }
 async function doEdit() {
   const id = document.getElementById('editId').value;
-  const replaceFile = document.getElementById('replaceInput').files[0];
-  if (replaceFile) {
-    const fd = new FormData(); fd.append('file', replaceFile);
-    const r = await fetch(`/replace/${id}`, { method: 'POST', body: fd });
-    const d = await r.json();
-    if (d.error) { toast(d.error, 'error'); return; }
+  const rf = document.getElementById('replaceInput').files[0];
+  if (rf) {
+    const fd = new FormData(); fd.append('file', rf);
+    const r = await fetch(`/replace/${id}`, { method:'POST', body:fd });
+    const d = await r.json(); if (d.error) { toast(d.error,'err'); return; }
   }
   const fd = new FormData();
   fd.append('name', document.getElementById('editName').value);
   fd.append('description', document.getElementById('editDesc').value);
-  fd.append('password', document.getElementById('editPassword').value);
+  fd.append('password', document.getElementById('editPw').value);
   fd.append('clear_password', document.getElementById('clearPw').checked ? '1' : '0');
   fd.append('folder_id', document.getElementById('editFolder').value);
-  const res = await fetch(`/edit/${id}`, { method: 'POST', body: fd });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
+  const res = await fetch(`/edit/${id}`, { method:'POST', body:fd });
+  const d   = await res.json();
+  if (d.error) { toast(d.error,'err'); return; }
   toast('Alterações salvas!');
   closeModal('editOverlay');
   setTimeout(() => location.reload(), 700);
 }
 
-// ---- DELETE FILE ----
+// ── DELETE ─────────────────────────────────────────────
 function openDelete(id, name) {
   document.getElementById('deleteId').value = id;
-  document.getElementById('deleteName').textContent = name;
+  document.getElementById('deleteName').textContent = '"' + name + '"';
   openModal('deleteOverlay');
 }
 async function doDelete() {
-  const id = document.getElementById('deleteId').value;
-  const res = await fetch(`/delete/${id}`, { method: 'POST' });
-  const data = await res.json();
-  if (data.ok) {
-    toast('Arquivo excluído.');
-    closeModal('deleteOverlay');
-    setTimeout(() => location.reload(), 600);
-  }
+  const id  = document.getElementById('deleteId').value;
+  const res = await fetch(`/delete/${id}`, { method:'POST' });
+  const d   = await res.json();
+  if (d.ok) { toast('Arquivo excluído.'); closeModal('deleteOverlay'); setTimeout(() => location.reload(), 600); }
 }
 
-// ---- STATS ----
+// ── STATS ──────────────────────────────────────────────
 async function openStats(id, name) {
-  document.getElementById('statsTitle').textContent = name;
-  document.getElementById('statsTotalNum').textContent = '…';
-  document.getElementById('statsList').innerHTML =
-    '<tr><td colspan="3" style="color:var(--muted);text-align:center;padding:20px">Carregando...</td></tr>';
+  document.getElementById('statsFileTitle').textContent = name;
+  document.getElementById('statsTotalN').textContent   = '…';
+  document.getElementById('statsBody').innerHTML =
+    '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px">Carregando...</td></tr>';
   openModal('statsOverlay');
-  const res = await fetch(`/stats/${id}`);
+  const res  = await fetch(`/stats/${id}`);
   const data = await res.json();
-  document.getElementById('statsTotalNum').textContent = data.total;
+  document.getElementById('statsTotalN').textContent = data.total;
   if (!data.recent.length) {
-    document.getElementById('statsList').innerHTML =
-      '<tr><td colspan="3" style="color:var(--muted);text-align:center;padding:20px">Nenhum acesso registrado ainda.</td></tr>';
+    document.getElementById('statsBody').innerHTML =
+      '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px">Nenhum acesso registrado ainda.</td></tr>';
     return;
   }
-  document.getElementById('statsList').innerHTML = data.recent.map(r => {
+  document.getElementById('statsBody').innerHTML = data.recent.map(r => {
     const isLocal = r.country === 'Local';
-    let locStr = '—';
-    if (isLocal) {
-      locStr = '🖥 Local';
-    } else {
-      const parts = [r.city, r.region, r.country].filter(x => x && x !== '—');
-      locStr = parts.length ? parts.join(', ') : '—';
-    }
-    const precisionBadge = r.geo_precise
-      ? '<span style="font-size:10px;background:rgba(34,197,94,0.15);color:#22c55e;padding:1px 6px;border-radius:10px;margin-left:6px">📍 GPS</span>'
-      : '<span style="font-size:10px;background:rgba(139,144,167,0.15);color:var(--muted);padding:1px 6px;border-radius:10px;margin-left:6px">IP</span>';
+    const parts   = [r.city, r.region, r.country].filter(x => x && x !== '—');
+    const loc     = isLocal ? '🖥 Local' : ('🌍 ' + (parts.join(', ') || '—'));
+    const badge   = r.geo_precise
+      ? '<span class="precision-badge gps-badge">📍 GPS</span>'
+      : '<span class="precision-badge ip-badge">IP</span>';
     return `<tr>
-      <td>${r.accessed_at}</td>
-      <td>${isLocal ? locStr : ('🌍 ' + locStr)}${isLocal ? '' : precisionBadge}</td>
-      <td style="color:var(--muted);font-size:12px">${r.ip || '—'}</td>
+      <td style="white-space:nowrap">${r.accessed_at}</td>
+      <td>${isLocal ? loc : loc + badge}</td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${r.ip || '—'}</td>
     </tr>`;
   }).join('');
 }
 
-// ---- DRAG & DROP para pastas ----
-let draggedFileId = null;
-
-function cardDragStart(e, fileId) {
-  draggedFileId = fileId;
+// ── DRAG & DROP ─────────────────────────────────────────
+let draggedId = null;
+function cardDragStart(e, id) {
+  draggedId = id;
   e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', fileId);
-  // Pequeno delay para o visual de "dragging" não aparecer na screenshot do drag
+  e.dataTransfer.setData('text/plain', id);
   setTimeout(() => e.target.closest('.file-card').classList.add('dragging'), 0);
 }
-
 function cardDragEnd(e) {
   e.target.closest('.file-card').classList.remove('dragging');
-  draggedFileId = null;
-  // Limpa todos os drop-hover residuais
+  draggedId = null;
   document.querySelectorAll('.drop-hover').forEach(el => el.classList.remove('drop-hover'));
 }
-
-function sidebarDragOver(e) {
-  if (!draggedFileId) return;
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('drop-hover');
-}
-
-function sidebarDragLeave(e) {
-  e.currentTarget.classList.remove('drop-hover');
-}
-
+function sidebarDragOver(e)  { if (!draggedId) return; e.preventDefault(); e.currentTarget.classList.add('drop-hover'); }
+function sidebarDragLeave(e) { e.currentTarget.classList.remove('drop-hover'); }
 async function sidebarDrop(e, folderId) {
   e.preventDefault();
   e.currentTarget.classList.remove('drop-hover');
-  const fileId = draggedFileId || e.dataTransfer.getData('text/plain');
-  if (!fileId) return;
-
-  const fd = new FormData();
-  fd.append('folder_id', folderId);
-  const res = await fetch(`/move/${fileId}`, { method: 'POST', body: fd });
+  const id = draggedId || e.dataTransfer.getData('text/plain');
+  if (!id) return;
+  const fd = new FormData(); fd.append('folder_id', folderId);
+  const res  = await fetch(`/move/${id}`, { method:'POST', body:fd });
   const data = await res.json();
   if (data.ok) {
-    const destName = folderId
+    const dest = folderId
       ? (e.currentTarget.querySelector('.folder-name-text')?.textContent?.trim() || 'pasta')
       : 'Sem pasta';
-    toast(`Movido para "${destName}"!`);
+    toast(`Movido para "${dest}"!`);
     setTimeout(() => location.reload(), 700);
-  } else {
-    toast('Erro ao mover arquivo.', 'error');
   }
 }
 
-// ---- FOLDERS ----
+// ── FOLDERS ─────────────────────────────────────────────
 function openNewFolder() {
   document.getElementById('newFolderName').value = '';
   openModal('newFolderOverlay');
@@ -843,38 +1059,34 @@ async function doCreateFolder() {
   const name = document.getElementById('newFolderName').value.trim();
   if (!name) return;
   const fd = new FormData(); fd.append('name', name);
-  const res = await fetch('/folders', { method: 'POST', body: fd });
+  const res  = await fetch('/folders', { method:'POST', body:fd });
   const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-  toast('Pasta criada!');
-  closeModal('newFolderOverlay');
-  setTimeout(() => location.reload(), 600);
+  if (data.error) { toast(data.error,'err'); return; }
+  toast('Pasta criada!'); closeModal('newFolderOverlay'); setTimeout(() => location.reload(), 600);
 }
-
 function openEditFolder(id, name) {
-  document.getElementById('editFolderId').value = id;
+  document.getElementById('editFolderId').value  = id;
   document.getElementById('editFolderName').value = name;
   openModal('editFolderOverlay');
   setTimeout(() => document.getElementById('editFolderName').focus(), 100);
 }
 async function doEditFolder() {
-  const id = document.getElementById('editFolderId').value;
+  const id   = document.getElementById('editFolderId').value;
   const name = document.getElementById('editFolderName').value.trim();
   if (!name) return;
   const fd = new FormData(); fd.append('name', name);
-  const res = await fetch(`/folders/${id}`, { method: 'POST', body: fd });
+  const res  = await fetch(`/folders/${id}`, { method:'POST', body:fd });
   const data = await res.json();
   if (data.ok) { toast('Pasta renomeada!'); closeModal('editFolderOverlay'); setTimeout(() => location.reload(), 600); }
 }
-
 function openDeleteFolder(id, name) {
-  document.getElementById('deleteFolderId').value = id;
+  document.getElementById('deleteFolderId').value   = id;
   document.getElementById('deleteFolderName').textContent = name;
   openModal('deleteFolderOverlay');
 }
 async function doDeleteFolder() {
-  const id = document.getElementById('deleteFolderId').value;
-  const res = await fetch(`/folders/${id}/delete`, { method: 'POST' });
+  const id   = document.getElementById('deleteFolderId').value;
+  const res  = await fetch(`/folders/${id}/delete`, { method:'POST' });
   const data = await res.json();
   if (data.ok) { toast('Pasta excluída.'); closeModal('deleteFolderOverlay'); setTimeout(() => location.reload(), 600); }
 }
