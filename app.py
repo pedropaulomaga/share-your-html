@@ -353,6 +353,20 @@ def edit_file(file_id):
     return jsonify({'ok': True})
 
 # ---------------------------------------------------------------------------
+# Move to folder (drag & drop)
+# ---------------------------------------------------------------------------
+
+@app.route('/move/<file_id>', methods=['POST'])
+def move_file(file_id):
+    guard = require_auth()
+    if guard: return guard
+    get_file_or_404(file_id)
+    folder_id = request.form.get('folder_id', '').strip() or None
+    query('UPDATE files SET folder_id=%s, updated_at=%s WHERE id=%s',
+          (folder_id, now(), file_id), commit=True)
+    return jsonify({'ok': True})
+
+# ---------------------------------------------------------------------------
 # Replace HTML content
 # ---------------------------------------------------------------------------
 
