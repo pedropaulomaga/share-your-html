@@ -682,13 +682,20 @@ async function openStats(id, name) {
     return;
   }
   document.getElementById('statsList').innerHTML = data.recent.map(r => {
-    const loc = r.city && r.city !== '—'
-      ? `${r.city}, ${r.country}`
-      : (r.country && r.country !== '—' ? r.country : '—');
     const isLocal = r.country === 'Local';
+    let locStr = '—';
+    if (isLocal) {
+      locStr = '🖥 Local';
+    } else {
+      const parts = [r.city, r.region, r.country].filter(x => x && x !== '—');
+      locStr = parts.length ? parts.join(', ') : '—';
+    }
+    const precisionBadge = r.geo_precise
+      ? '<span style="font-size:10px;background:rgba(34,197,94,0.15);color:#22c55e;padding:1px 6px;border-radius:10px;margin-left:6px">📍 GPS</span>'
+      : '<span style="font-size:10px;background:rgba(139,144,167,0.15);color:var(--muted);padding:1px 6px;border-radius:10px;margin-left:6px">IP</span>';
     return `<tr>
       <td>${r.accessed_at}</td>
-      <td>${isLocal ? '🖥 Local' : '🌍 ' + loc}</td>
+      <td>${isLocal ? locStr : ('🌍 ' + locStr)}${isLocal ? '' : precisionBadge}</td>
       <td style="color:var(--muted);font-size:12px">${r.ip || '—'}</td>
     </tr>`;
   }).join('');

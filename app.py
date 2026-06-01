@@ -69,6 +69,8 @@ def init_db():
                 "ALTER TABLE access_log ADD COLUMN IF NOT EXISTS country TEXT DEFAULT ''",
                 "ALTER TABLE access_log ADD COLUMN IF NOT EXISTS city TEXT DEFAULT ''",
                 "ALTER TABLE access_log ADD COLUMN IF NOT EXISTS region TEXT DEFAULT ''",
+                "ALTER TABLE access_log ADD COLUMN IF NOT EXISTS geo_token TEXT DEFAULT NULL",
+                "ALTER TABLE access_log ADD COLUMN IF NOT EXISTS geo_precise BOOLEAN DEFAULT FALSE",
             ]
             for m in migrations:
                 cur.execute(m)
@@ -102,8 +104,8 @@ def get_file_or_404(file_id):
         abort(404)
     return row
 
-def get_geo(ip):
-    """Geolocation via ip-api.com (free, no key needed, 45 req/min)."""
+def get_geo_by_ip(ip):
+    """Geolocation aproximada via IP (fallback)."""
     if not ip or ip in ('127.0.0.1', '::1', ''):
         return {'country': 'Local', 'city': '—', 'region': '—'}
     try:
@@ -121,18 +123,38 @@ def get_geo(ip):
         pass
     return {'country': '—', 'city': '—', 'region': '—'}
 
+def reverse_geocode(lat, lng):
+    """Reverse geocode coordenadas GPS via BigDataCloud (gratuito, sem chave)."""
+    try:
+        url = (f'https://api.bigdatacloud.net/data/reverse-geocode-client'
+               f'?latitude={lat}&longitude={lng}&localityLanguage=pt')
+        req = urllib.request.Request(url, headers={'User-Agent': 'ShareHTML/1.0'})
+        with urllib.request.urlopen(req, timeout=5) as r:
+            data = json.loads(r.read())
+        city   = data.get('city') or data.get('locality') or data.get('localityInfo', {}).get('administrative', [{}])[0].get('name', '—')
+        region = data.get('principalSubdivision', '—')
+        country= data.get('countryName', '—')
+        return {'city': city or '—', 'region': region, 'country': country}
+    except Exception:
+        pass
+    return {'city': '—', 'region': '—', 'country': '—'}
+
 def log_access(file_id):
+    """Registra acesso e retorna geo_token para coleta GPS opcional."""
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     if ip and ',' in ip:
         ip = ip.split(',')[0].strip()
-    geo = get_geo(ip)
+    geo = get_geo_by_ip(ip)
+    geo_token = str(uuid.uuid4()).replace('-', '')[:20]
     query(
-        '''INSERT INTO access_log (file_id, accessed_at, ip, user_agent, country, city, region)
-           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
+        '''INSERT INTO access_log
+           (file_id, accessed_at, ip, user_agent, country, city, region, geo_token, geo_precise)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
         (file_id, now(), ip, request.user_agent.string[:200],
-         geo['country'], geo['city'], geo['region']),
+         geo['country'], geo['city'], geo['region'], geo_token, False),
         commit=True
     )
+    return geo_token
 
 def get_stats(file_id):
     total = query(
@@ -140,7 +162,7 @@ def get_stats(file_id):
         (file_id,), fetchone=True
     )['c']
     recent = query(
-        '''SELECT accessed_at, ip, country, city, region
+        '''SELECT accessed_at, ip, country, city, region, geo_precise
            FROM access_log WHERE file_id = %s
            ORDER BY accessed_at DESC LIMIT 30''',
         (file_id,), fetchall=True
@@ -298,24 +320,42 @@ def upload():
 # View (public share link)
 # ---------------------------------------------------------------------------
 
+GEO_SCRIPT = '''<script>
+(function(){{
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(function(p) {{
+    fetch('/geo/{token}', {{
+      method: 'POST',
+      headers: {{'Content-Type': 'application/json'}},
+      body: JSON.stringify({{lat: p.coords.latitude, lng: p.coords.longitude}})
+    }});
+  }}, function() {{}}, {{timeout: 10000, enableHighAccuracy: false}});
+}})();
+</script>'''
+
+def serve_html(content, geo_token):
+    """Serve HTML com script de geolocalização injetado."""
+    injected = content + GEO_SCRIPT.format(token=geo_token)
+    return Response(injected, mimetype='text/html')
+
 @app.route('/v/<file_id>', methods=['GET', 'POST'])
 def view_file(file_id):
     f = get_file_or_404(file_id)
 
     if f['password']:
         if session.get(f'unlocked_{file_id}'):
-            log_access(file_id)
-            return Response(f['content'], mimetype='text/html')
+            token = log_access(file_id)
+            return serve_html(f['content'], token)
         if request.method == 'POST':
             if hash_password(request.form.get('password', '')) == f['password']:
                 session[f'unlocked_{file_id}'] = True
-                log_access(file_id)
-                return Response(f['content'], mimetype='text/html')
+                token = log_access(file_id)
+                return serve_html(f['content'], token)
             return render_template('password.html', file=dict(f), error=True)
         return render_template('password.html', file=dict(f), error=False)
 
-    log_access(file_id)
-    return Response(f['content'], mimetype='text/html')
+    token = log_access(file_id)
+    return serve_html(f['content'], token)
 
 # ---------------------------------------------------------------------------
 # Edit metadata
@@ -348,6 +388,30 @@ def edit_file(file_id):
         '''UPDATE files SET name=%s, description=%s, password=%s, password_plain=%s,
            folder_id=%s, updated_at=%s WHERE id=%s''',
         (name, description, pw_hash, pw_plain, folder_id, now(), file_id),
+        commit=True
+    )
+    return jsonify({'ok': True})
+
+# ---------------------------------------------------------------------------
+# Geolocation GPS — recebe coordenadas do browser e atualiza o log
+# ---------------------------------------------------------------------------
+
+@app.route('/geo/<token>', methods=['POST'])
+def update_geo(token):
+    if not token:
+        return jsonify({'ok': False})
+    data = request.get_json(silent=True) or {}
+    lat  = data.get('lat')
+    lng  = data.get('lng')
+    if lat is None or lng is None:
+        return jsonify({'ok': False})
+
+    loc = reverse_geocode(lat, lng)
+    query(
+        '''UPDATE access_log
+           SET city=%s, region=%s, country=%s, geo_precise=TRUE, geo_token=NULL
+           WHERE geo_token=%s''',
+        (loc['city'], loc['region'], loc['country'], token),
         commit=True
     )
     return jsonify({'ok': True})
