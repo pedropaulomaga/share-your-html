@@ -7,6 +7,7 @@ from datetime import datetime
 
 import psycopg2
 import psycopg2.extras
+from zoneinfo import ZoneInfo
 from flask import (
     Flask, render_template, request, redirect, url_for,
     abort, jsonify, session, Response
@@ -95,8 +96,10 @@ def query(sql, params=(), fetchone=False, fetchall=False, commit=False):
 def hash_password(pw):
     return hashlib.sha256(pw.encode()).hexdigest() if pw else ''
 
+BRT = ZoneInfo('America/Sao_Paulo')
+
 def now():
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.now(BRT).strftime('%Y-%m-%d %H:%M:%S')
 
 def get_file_or_404(file_id):
     row = query('SELECT * FROM files WHERE id = %s', (file_id,), fetchone=True)
